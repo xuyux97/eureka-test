@@ -1,6 +1,11 @@
 spring:
   application:
     name: consumer-a
+  cloud:
+    #高版本Spring cloud 移除了 ribbon 作为负载均衡器
+    loadbalancer:
+      configurations: zone-preference
+
 server:
   port: 8083
 
@@ -8,7 +13,6 @@ eureka:
   instance:
     lease-renewal-interval-in-seconds: 3
     lease-expiration-duration-in-seconds: 9
-    preferIpAddress: true
     hostname: peer1
     metadata-map:
       zone: zone-1
