@@ -5,6 +5,13 @@ spring:
     #高版本Spring cloud 移除了 ribbon 作为负载均衡器
     loadbalancer:
       configurations: zone-preference
+    openfeign:
+      client:
+        config:
+          default:
+            connect-timeout: 1000
+            read-timeout: 5000
+            logger-level: full
 
 server:
   port: 8083
