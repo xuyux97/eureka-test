@@ -12,7 +12,7 @@ eureka:
     hostname: peer1
     metadata-map:
       zone: zone-1
-      version: release
+      version: nogray
 
   client:
     register-with-eureka: true

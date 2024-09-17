@@ -11,7 +11,7 @@ eureka:
     preferIpAddress: true
     hostname: peer1
     metadata-map:
-      zone: zone-2
+      zone: zone-1
       version: release
 
   client:

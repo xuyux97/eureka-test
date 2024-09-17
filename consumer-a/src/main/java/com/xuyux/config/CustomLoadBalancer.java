@@ -18,9 +18,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * 自定义 load balancer
+ * 在轮询的基础上增加了 version 的判断
  * @author xuyux
  * @date 2024/9/17 10:50
  */
@@ -98,30 +100,32 @@ public class CustomLoadBalancer implements ReactorServiceInstanceLoadBalancer {
     private List<ServiceInstance> chooseSameVersion(List<ServiceInstance> instances) {
         //被选择的实例
         List<ServiceInstance> chosenInstances = new ArrayList<>();
-        for (ServiceInstance instance : instances) {
-            //获取实例的 Metadata
-            Map<String, String> metadata = instance.getMetadata();
-            if (metadata.containsKey("version")) {
-                //判断依据 同版本 -> release -> 其他
-                String version = metadata.get("version");
-                if (version.equals(this.instanceVersion)) {
-                    chosenInstances.add(instance);
-                    continue;
-                }
-                if ("release".equals(this.instanceVersion)) {
-                    chosenInstances.add(instance);
-                    continue;
-                }
-                if (chosenInstances.isEmpty()) {
-                    chosenInstances.add(instance);
-                }
-            } else {
-                //如果发现的实例列表没有 version 默认原先
-                return instances;
-            }
+        //根据 version 进行分组，随后根据 version 选择返回的列表
+        Map<String, List<ServiceInstance>> serviceInstanceVersionMap = instances.stream()
+                .collect(Collectors.groupingBy(this::getInstanceVersion));
+        if (serviceInstanceVersionMap.isEmpty()) {
+            return chosenInstances;
         }
-        return chosenInstances;
+        //同版本优先
+        if (serviceInstanceVersionMap.containsKey(instanceVersion)) {
+            return serviceInstanceVersionMap.get(instanceVersion);
+        }
+        //release 次之
+        if (serviceInstanceVersionMap.containsKey("release")) {
+            return serviceInstanceVersionMap.get("release");
+        }
+        //返回默认
+        return instances;
     }
 
+    /**
+     * 获取实例版本，默认为release
+     * @param instance 实例
+     * @return 版本
+     */
+    private String getInstanceVersion(ServiceInstance instance) {
+        Map<String, String> metadata = instance.getMetadata();
+        return metadata.getOrDefault("version", "release");
+    }
 
 }

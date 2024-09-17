@@ -5,13 +5,10 @@ import org.springframework.cloud.loadbalancer.core.ReactorLoadBalancer;
 import org.springframework.cloud.loadbalancer.core.ServiceInstanceListSupplier;
 import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
-@Configuration
 public class CustomLoadBalancerConfiguration {
-
 
     @Bean
     ReactorLoadBalancer<ServiceInstance> preferZoneAndVersionBalancer(Environment environment,
@@ -24,15 +21,5 @@ public class CustomLoadBalancerConfiguration {
         return new CustomLoadBalancer(version, name, clientFactory.getLazyProvider(name,
                 ServiceInstanceListSupplier.class));
     }
-
-//    @Bean
-//    public ServiceInstanceListSupplier discoveryClientServiceInstanceListSupplier(
-//            ConfigurableApplicationContext context) {
-//        return ServiceInstanceListSupplier.builder()
-//                .withDiscoveryClient()
-//                .withCaching()
-//                .withZonePreference()
-//                .build(context);
-//    }
 
 }
