@@ -85,10 +85,12 @@ public class CustomLoadBalancer implements ReactorServiceInstanceLoadBalancer {
         List<ServiceInstance> instanceList = chooseSameVersion(instances);
         //列表中有多个值时采用轮训
         if (instanceList.size() == 1) {
+            log.info("feign request instance url: {}", instanceList.getFirst().getUri().toString());
             return new DefaultResponse(instanceList.getFirst());
         }
         int pos = this.position.incrementAndGet() & Integer.MAX_VALUE;
         ServiceInstance instance = instances.get(pos % instances.size());
+        log.info("feign request instance url: {}", instance.getUri().toString());
         return new DefaultResponse(instance);
     }
 
