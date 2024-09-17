@@ -23,6 +23,7 @@ eureka:
     hostname: peer1
     metadata-map:
       zone: zone-1
+      version: release
 
   client:
     register-with-eureka: true
